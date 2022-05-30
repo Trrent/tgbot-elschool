@@ -1,6 +1,7 @@
 from aiogram import Dispatcher, Bot, types
 import logging
 import os
+from db import BotDB
 from aiogram.utils.executor import start_webhook
 
 
@@ -9,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
-
+botDB = BotDB(os.environ.get('DB_URI'))
 
 HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME')
 
@@ -26,12 +27,15 @@ async def on_startup(dispatcher):
 
 
 async def on_shutdown(dispatcher):
+    botDB.close()
     await bot.delete_webhook()
 
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     await message.answer(f'Привет, {message.from_user.first_name}')
+    if not botDB.user_exists(message.from_user.id):
+        botDB.add_user(message.from_user.id)
 
 
 @dp.message_handler()

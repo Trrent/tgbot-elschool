@@ -8,13 +8,13 @@ class BotDB:
 
     def user_exists(self, user_id):
         """Проверяем, есть ли юзер в базе"""
-        result = self.cursor.execute(f"SELECT id FROM users WHERE user_id = {user_id}")
-        return bool(len(result.fetchall()))
+        self.cursor.execute(f"SELECT `id` FROM `users` WHERE `user_id` = {user_id}")
+        return bool(len(self.cursor.fetchone()))
 
     def get_user_id(self, user_id):
         """Достаем id юзера в базе по его user_id"""
-        result = self.cursor.execute(f"SELECT id FROM users WHERE user_id = {user_id}")
-        return result.fetchone()[0]
+        self.cursor.execute(f"SELECT id FROM users WHERE user_id = {user_id}")
+        return self.cursor.fetchone()[0]
 
     def add_user(self, user_id):
         """Добавляем юзера в базу"""
